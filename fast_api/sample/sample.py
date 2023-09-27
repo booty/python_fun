@@ -29,9 +29,22 @@ def read_root():
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+    cat = Category(name="Toys", category_id=1234, description="Toys for kids")
+    item = Item(item_id=2, name="Toy Car", price=123.45, category=cat)
+    return {item: item, "q": q}
 
 
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
+
+
+# skip and limit (if supplied) would come from the querystring and will be converted to int
+# would match ex:
+#   http://127.0.0.1:8000/items/?skip=666
+#   http://127.0.0.1:8000/items
+# will cause error:
+#   http://127.0.0.1:8000/items/?skip=foo  (because foo is not an int)
+@app.get("/items/")
+async def read_items(skip: int = 0, limit: int = 10):
+    return {"fake_results": {"your_params": {"skip": skip, "limit": limit}}}
